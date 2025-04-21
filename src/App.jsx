@@ -6,6 +6,7 @@ import Login from "./pages/login/index.jsx";
 import {ToastContainer} from "react-toastify";
 import RegisterApprove from "./pages/register-approve/index.jsx";
 import User from "./pages/user/index.jsx";
+import Profile from "./pages/profile/index.jsx";
 
 export const routes = [
     {
@@ -20,6 +21,13 @@ export const routes = [
         path: '/user/:id',
         title: 'User',
         element: <User/>,
+        show: false
+    },
+    {
+        id: 3,
+        path: '/profile',
+        title: 'Profile',
+        element: <Profile/>,
         show: false
     },
 ]

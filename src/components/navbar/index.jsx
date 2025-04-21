@@ -2,9 +2,10 @@ import {routes} from "../../App.jsx";
 import {DropdownItem, DropdownMenu, DropdownToggle, NavLink, Spinner, UncontrolledDropdown} from "reactstrap";
 import {useEffect, useState} from "react";
 import instance from '../../api/index.js'
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
+import {getUserShortName} from "../../utils/text/index.js";
 
-const Navabar = () => {
+const Navbar = () => {
     const [isLoading, setIsLoading] = useState(false)
     const [user, setUser] = useState({})
     const [search, setSearch] = useState('')
@@ -20,6 +21,7 @@ const Navabar = () => {
                 }
             })
             setUser(data?.data?.data?.user)
+            localStorage.setItem('user', JSON.stringify(data?.data?.data?.user))
         } catch (e) {
             if (e.response.status === 401) {
                 navigate('/login')
@@ -30,13 +32,6 @@ const Navabar = () => {
 
     }
 
-    const getUserShortName = () => {
-        const name = user?.name
-        const arr = name?.split(' ')
-        return `${arr?.[0]?.[0]}${arr?.[1]?.[0]}`
-
-    }
-
     const searchByUserName = async (e) => {
         e.preventDefault()
         const data = await instance.get('/profile/search', {
@@ -44,7 +39,8 @@ const Navabar = () => {
                 Authorization: `Bearer ${localStorage.getItem('token')}`
             },
             params: {
-                keyword: search
+                keyword: search,
+                limit: 200,
             }
         })
         setUsers(data?.data?.data?.users)
@@ -100,7 +96,12 @@ const Navabar = () => {
                         textAlign: 'center',
                         lineHeight: '39px'
                     }}>
-                        {isLoading ? <Spinner/> : getUserShortName()}
+                        {isLoading ? <Spinner/> : <Link style={{
+                            textDecoration: 'none',
+                            color: 'black'
+                        }} to="/profile">
+                            {getUserShortName(user)}
+                        </Link>}
                     </div>
                 </div>
             </div>
@@ -108,4 +109,4 @@ const Navabar = () => {
     )
 }
 
-export default Navabar
+export default Navbar

@@ -1,7 +1,7 @@
 import {useLocation, useNavigate} from "react-router-dom";
 import {useEffect} from "react";
 import {Container} from "reactstrap";
-import Navabar from "../navabar/index.jsx";
+import Navabar from "../navbar/index.jsx";
 
 const MainLayout = ({children, title}) => {
     const token = localStorage.getItem('token')
