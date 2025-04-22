@@ -1,8 +1,8 @@
 import {routes} from "../../App.jsx";
-import {DropdownItem, DropdownMenu, DropdownToggle, NavLink, Spinner, UncontrolledDropdown} from "reactstrap";
+import {DropdownItem, DropdownMenu, DropdownToggle, Spinner, UncontrolledDropdown} from "reactstrap";
 import {useEffect, useState} from "react";
 import instance from '../../api/index.js'
-import {Link, useNavigate} from "react-router-dom";
+import {Link, NavLink, useNavigate} from "react-router-dom";
 import {getUserShortName} from "../../utils/text/index.js";
 
 const Navbar = () => {
@@ -63,7 +63,7 @@ const Navbar = () => {
                     <ul className="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll">
                         {routes.filter(item => item.show).map(item => (
                             <li className="nav-item" key={item.id}>
-                                <NavLink className="nav-link" aria-current="page" href="#">{item.title}</NavLink>
+                                <NavLink className="nav-link" to={item.path}>{item.title}</NavLink>
                             </li>
                         ))}
                     </ul>

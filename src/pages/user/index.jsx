@@ -13,16 +13,19 @@ import {
     ModalBody,
     ModalFooter,
     ModalHeader,
-    Row
+    Row,
+    Spinner
 } from "reactstrap";
 import FollowersModal from "./followers-modal";
 import {getFileFullUrl} from "../../utils/file/index.js";
+import {getUserShortName} from "../../utils/text/index.js";
 
 const User = () => {
     const {id} = useParams()
     const [user, setUser] = useState({})
     const [isUserModalOpen, setIsUserModalOpen] = useState(false)
     const [modalData, setModalData] = useState(null)
+    const [isFollowLoading, setIsFollowLoading] = useState(false)
     const getUserByUserId = async () => {
         const data = await instance.get(`/profile/other/${id}`, {
             headers: {
@@ -33,11 +36,13 @@ const User = () => {
     }
 
     const followUser = async () => {
+        setIsFollowLoading(true)
         await instance.post(`/follow/${id}`, null, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('token')}`
             }
         })
+        setIsFollowLoading(false)
         getUserByUserId()
     }
 
@@ -74,8 +79,23 @@ const User = () => {
                     <CardBody>
                         <Row>
                             <Col sm={12} md={3}>
-                                <img width="200px" height="200px"
-                                     src={getFileFullUrl(user?.profile_photo_path)}/>
+                                {user?.profile_photo_path ? (
+                                    <img width="200px" height="200px"
+                                         src={getFileFullUrl(user?.profile_photo_path)}/>
+                                ) : (
+                                    <div style={{
+                                        width: 200,
+                                        height: 200,
+                                        cursor: 'pointer',
+                                        fontSize: 60,
+                                        textAlign: 'center',
+                                        lineHeight: '199px',
+                                        border: '1px solid'
+                                    }}>
+                                        {getUserShortName(user)}
+                                    </div>
+                                )}
+
                             </Col>
                             {user?.profile_banner_path && (
                                 <Col sm={12} md={3}>
@@ -118,9 +138,15 @@ const User = () => {
                                         }}>{user?.following_count}</Badge>
                                     </div>
                                     {user?.is_following ? <>
-                                            <Button size="sm" color="danger" onClick={followUser}>Unfollow</Button>
+                                            <Button disabled={isFollowLoading} size="sm" color="danger"
+                                                    onClick={followUser}>
+                                                {isFollowLoading ? <Spinner size="sm"/> : 'Unfollow'}
+                                            </Button>
                                         </> :
-                                        <Button size="sm" color="primary" onClick={followUser}>Follow</Button>}
+                                        <Button disabled={isFollowLoading} size="sm" color="primary"
+                                                onClick={followUser}>
+                                            {isFollowLoading ? <Spinner size="sm"/> : 'Follow'}
+                                        </Button>}
                                 </div>
                             </Col>
                         </Row>

@@ -11,9 +11,14 @@ import {
     ModalBody,
     ModalFooter,
     ModalHeader,
+    Nav,
+    NavItem,
+    NavLink,
     Progress,
     Row,
-    Spinner
+    Spinner,
+    TabContent,
+    TabPane
 } from "reactstrap";
 import FollowersModal from "../user/followers-modal.jsx";
 import {getProfileFileUrl} from "../../utils/file/index.js";
@@ -21,6 +26,8 @@ import {useEffect, useState} from "react";
 import instance from "../../api/index.js";
 import {useNavigate} from "react-router-dom";
 import {getUserShortName} from "../../utils/text/index.js";
+import PostTweet from "../../components/post-tweet/index.jsx";
+import MyTweets from "./my-tweets.jsx";
 
 const Profile = () => {
     const [isUserModalOpen, setIsUserModalOpen] = useState(false)
@@ -36,6 +43,8 @@ const Profile = () => {
     const [bannerPhotoPercent, setBannerPhotoPercent] = useState(0)
     const [isBannerProgressStart, setIsBannerProgressStart] = useState(false)
     const navigate = useNavigate()
+
+    const [activeTab, setActiveTab] = useState(1)
 
     const toggleModal = () => {
         setIsUserModalOpen(!isUserModalOpen)
@@ -135,133 +144,164 @@ const Profile = () => {
                 }} outline>Close</Button>
             </ModalFooter>
         </Modal>
-        <Col>
-            <Card>
-                <CardHeader>
-                    <CardTitle>
-                        {user?.name} - {user?.email}
-                    </CardTitle>
-                </CardHeader>
-                <CardBody>
-                    <Row>
-                        <Col sm={12} md={3}>
-                            <input onChange={setProfilePhoto} accept=".png,.jpeg,.jpg,.jfif,.webp"
-                                   id="profile-photo" type="file" style={{
-                                display: 'none'
-                            }}/>
-                            {(binaryPhoto || user?.profile_photo_path) ? <label htmlFor="profile-photo">
-                                <img width="200px" height="200px"
-                                     src={binaryPhoto || getProfileFileUrl(user?.profile_photo_path)}/>
-                            </label> : (
-                                <label htmlFor="profile-photo" style={{
-                                    width: 200,
-                                    height: 200,
-                                    cursor: 'pointer',
-                                    fontSize: 60,
-                                    textAlign: 'center',
-                                    lineHeight: '199px',
-                                    border: '1px solid'
-                                }}>
+        <Nav tabs>
+            <NavItem>
+                <NavLink className={activeTab === 1 && 'active'} onClick={() => setActiveTab(1)}>
+                    Main
+                </NavLink>
+            </NavItem>
+            <NavItem>
+                <NavLink className={activeTab === 2 && 'active'} onClick={() => setActiveTab(2)}>
+                    Post Tweet
+                </NavLink>
+            </NavItem>
+            <NavItem>
+                <NavLink className={activeTab === 3 && 'active'} onClick={() => setActiveTab(3)}>
+                    My Tweets
+                </NavLink>
+            </NavItem>
+        </Nav>
+        <TabContent className="mt-3" activeTab={activeTab}>
+            <TabPane tabId={1}>
+                <Col sm={12}>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>
+                                {user?.name} - {user?.email}
+                            </CardTitle>
+                        </CardHeader>
+                        <CardBody>
+                            <Row>
+                                <Col sm={12} md={3}>
+                                    <input onChange={setProfilePhoto} accept=".png,.jpeg,.jpg,.jfif,.webp"
+                                           id="profile-photo" type="file" style={{
+                                        display: 'none'
+                                    }}/>
+                                    {(binaryPhoto || user?.profile_photo_path) ? <label htmlFor="profile-photo">
+                                        <img width="200px" height="200px"
+                                             src={binaryPhoto || getProfileFileUrl(user?.profile_photo_path)}/>
+                                    </label> : (
+                                        <label htmlFor="profile-photo" style={{
+                                            width: 200,
+                                            height: 200,
+                                            cursor: 'pointer',
+                                            fontSize: 60,
+                                            textAlign: 'center',
+                                            lineHeight: '199px',
+                                            border: '1px solid'
+                                        }}>
 
-                                    {getUserShortName(user)}
-                                </label>
-                            )}
-                            {isProfileProgressStart && (
-                                <Progress value={profilePhotoPercent}/>
-                            )}
-                        </Col>
-                        <Col sm={12} md={3}>
-                            <input onChange={setBannerPhoto} accept=".png,.jpeg,.jpg,.jfif,.webp"
-                                   id="banner-photo" type="file" style={{
-                                display: 'none'
-                            }}/>
-                            {(binaryBannerPhoto || user?.profile_banner_path) ? (
-                                <label htmlFor="banner-photo">
-                                    <img width="200px" height="200px"
-                                         src={binaryBannerPhoto || getProfileFileUrl(user?.profile_banner_path)}/>
-                                </label>
-                            ) : (
-                                <>
-                                    <label style={{
-                                        cursor: 'pointer'
-                                    }} htmlFor="banner-photo">Upload Banner Photo</label>
-                                </>
-                            )}
-                            {isBannerProgressStart && (
-                                <Progress value={bannerPhotoPercent}/>
-                            )}
-                        </Col>
-                        <Col sm={12} md={3}>
-                            <form action="" onSubmit={updateProfile}>
-                                <div>
-                                    <b>Username</b>:
-                                    <Input value={user?.username} onChange={e => {
-                                        setUser({
-                                            ...user,
-                                            username: e.target.value
-                                        })
-                                    }
-                                    }/>
-                                </div>
-                                <div>
-                                    <b>Name</b>:
-                                    <Input value={user?.name} onChange={e => {
-                                        setUser({
-                                            ...user,
-                                            name: e.target.value
-                                        })
-                                    }
-                                    }/>
-                                </div>
-                                <div>
-                                    <b>Bio</b>:
-                                    <Input value={user?.bio} onChange={e => {
-                                        setUser({
-                                            ...user,
-                                            bio: e.target.value
-                                        })
-                                    }
-                                    }/>
-                                </div>
-                                <div>
-                                    <b>Link</b>:
-                                    <Input value={user?.link} onChange={e => {
-                                        setUser({
-                                            ...user,
-                                            link: e.target.value
-                                        })
-                                    }
-                                    }/>
-                                </div>
-                                <Button className="mt-2" color="success" type="submit">Save</Button>
-                            </form>
-                        </Col>
-                        <Col sm={12} md={3}>
-                            <div className="d-flex flex-column gap-2">
-                                <div>
-                                    <b>Followers</b>
-                                    <Badge style={{
-                                        cursor: 'pointer'
-                                    }} color="warning" onClick={() => {
-                                        toggleModal()
-                                        setModalData(1)
-                                    }}>{user?.followers_count}</Badge>
-                                </div>
-                                <div>
-                                    <b>Following</b>
-                                    <Badge color="warning" style={{
-                                        cursor: 'pointer'
-                                    }} onClick={() => {
-                                        toggleModal()
-                                        setModalData(2)
-                                    }}>{user?.following_count}</Badge>
-                                </div>
-                            </div>
-                        </Col>
-                    </Row>
-                </CardBody>
-            </Card>
-        </Col>
+                                            {getUserShortName(user)}
+                                        </label>
+                                    )}
+                                    {isProfileProgressStart && (
+                                        <Progress value={profilePhotoPercent}/>
+                                    )}
+                                </Col>
+                                <Col sm={12} md={3}>
+                                    <input onChange={setBannerPhoto} accept=".png,.jpeg,.jpg,.jfif,.webp"
+                                           id="banner-photo" type="file" style={{
+                                        display: 'none'
+                                    }}/>
+                                    {(binaryBannerPhoto || user?.profile_banner_path) ? (
+                                        <label htmlFor="banner-photo">
+                                            <img width="200px" height="200px"
+                                                 src={binaryBannerPhoto || getProfileFileUrl(user?.profile_banner_path)}/>
+                                        </label>
+                                    ) : (
+                                        <>
+                                            <label style={{
+                                                cursor: 'pointer'
+                                            }} htmlFor="banner-photo">Upload Banner Photo</label>
+                                        </>
+                                    )}
+                                    {isBannerProgressStart && (
+                                        <Progress value={bannerPhotoPercent}/>
+                                    )}
+                                </Col>
+                                <Col sm={12} md={3}>
+                                    <form action="" onSubmit={updateProfile}>
+                                        <div>
+                                            <b>Username</b>:
+                                            <Input value={user?.username} onChange={e => {
+                                                setUser({
+                                                    ...user,
+                                                    username: e.target.value
+                                                })
+                                            }
+                                            }/>
+                                        </div>
+                                        <div>
+                                            <b>Name</b>:
+                                            <Input value={user?.name} onChange={e => {
+                                                setUser({
+                                                    ...user,
+                                                    name: e.target.value
+                                                })
+                                            }
+                                            }/>
+                                        </div>
+                                        <div>
+                                            <b>Bio</b>:
+                                            <Input value={user?.bio} onChange={e => {
+                                                setUser({
+                                                    ...user,
+                                                    bio: e.target.value
+                                                })
+                                            }
+                                            }/>
+                                        </div>
+                                        <div>
+                                            <b>Link</b>:
+                                            <Input value={user?.link} onChange={e => {
+                                                setUser({
+                                                    ...user,
+                                                    link: e.target.value
+                                                })
+                                            }
+                                            }/>
+                                        </div>
+                                        <Button className="mt-2" color="success" type="submit">Save</Button>
+                                    </form>
+                                </Col>
+                                <Col sm={12} md={3}>
+                                    <div className="d-flex flex-column gap-2">
+                                        <div>
+                                            <b>Followers</b>
+                                            <Badge style={{
+                                                cursor: 'pointer'
+                                            }} color="warning" onClick={() => {
+                                                toggleModal()
+                                                setModalData(1)
+                                            }}>{user?.followers_count}</Badge>
+                                        </div>
+                                        <div>
+                                            <b>Following</b>
+                                            <Badge color="warning" style={{
+                                                cursor: 'pointer'
+                                            }} onClick={() => {
+                                                toggleModal()
+                                                setModalData(2)
+                                            }}>{user?.following_count}</Badge>
+                                        </div>
+                                    </div>
+                                </Col>
+                            </Row>
+                        </CardBody>
+                    </Card>
+                </Col>
+            </TabPane>
+            <TabPane tabId={2}>
+                <Col sm={12} className="mt-2">
+                    <PostTweet/>
+                </Col>
+            </TabPane>
+            <TabPane tabId={3}>
+                <Col sm={12} className="mt-2">
+                    <MyTweets/>
+                </Col>
+            </TabPane>
+        </TabContent>
     </Row>
 
 }

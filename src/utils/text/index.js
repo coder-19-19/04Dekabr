@@ -1,6 +1,8 @@
 export const getUserShortName = (user) => {
-    const name = user?.name
-    const arr = name?.split(' ')
-    return `${arr?.[0]?.[0]}${arr?.[1]?.[0]}`
+    const fullname = user?.name
+    const arr = fullname?.split(' ')
+    const name = arr?.[0]?.[0] || ''
+    const surname = arr?.[1]?.[0] || ''
+    return `${name}${surname}`
 
 }
