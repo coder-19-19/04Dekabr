@@ -16,7 +16,7 @@ import {
     Row,
     Spinner
 } from "reactstrap";
-import FollowersModal from "./followers-modal";
+import UsersListModal from "./users-list-modal.jsx";
 import {getFileFullUrl} from "../../utils/file/index.js";
 import {getUserShortName} from "../../utils/text/index.js";
 
@@ -61,7 +61,7 @@ const User = () => {
             <Modal isOpen={isUserModalOpen} toggle={toggleModal}>
                 <ModalHeader toggle={toggleModal}>Followers</ModalHeader>
                 <ModalBody>
-                    <FollowersModal type={modalData}/>
+                    <UsersListModal type={modalData}/>
                 </ModalBody>
                 <ModalFooter>
                     <Button color="secondary" onClick={() => {

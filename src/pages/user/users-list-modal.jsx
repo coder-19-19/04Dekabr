@@ -5,7 +5,7 @@ import {ListGroup, ListGroupItem, Spinner} from "reactstrap";
 import {getFileFullUrl} from "../../utils/file/index.js";
 import {getUserShortName} from "../../utils/text/index.js";
 
-const FollowersModal = ({type, currentUserId}) => {
+const UsersListModal = ({type, currentUserId, tweetId}) => {
     const params = useParams()
     const id = currentUserId || params.id
     const [isFetching, setIsFetching] = useState(false)
@@ -34,12 +34,24 @@ const FollowersModal = ({type, currentUserId}) => {
         setIsFetching(false)
     }
 
+    const getTweetLikesUsers = async () => {
+        setIsFetching(true)
+        const data = await instance.get(`/tweet/like/${tweetId}/user-list`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`
+            }
+        })
+        setUsers(data?.data?.data?.users)
+        setIsFetching(false)
+    }
 
     useEffect(() => {
         if (type === 1) {
             getUserFollowers()
-        } else {
+        } else if (type === 2) {
             getUserFollowings()
+        } else {
+            getTweetLikesUsers()
         }
     }, [])
 
@@ -75,4 +87,4 @@ const FollowersModal = ({type, currentUserId}) => {
 
 }
 
-export default FollowersModal
+export default UsersListModal

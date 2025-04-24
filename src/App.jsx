@@ -7,6 +7,7 @@ import {ToastContainer} from "react-toastify";
 import RegisterApprove from "./pages/register-approve/index.jsx";
 import User from "./pages/user/index.jsx";
 import Profile from "./pages/profile/index.jsx";
+import TweetDetail from "./pages/tweet-detail/index.jsx";
 
 export const routes = [
     {
@@ -28,6 +29,13 @@ export const routes = [
         path: '/profile',
         title: 'Profile',
         element: <Profile/>,
+        show: false
+    },
+    {
+        id: 4,
+        path: '/tweet/:id',
+        title: 'Profile',
+        element: <TweetDetail/>,
         show: false
     },
 ]

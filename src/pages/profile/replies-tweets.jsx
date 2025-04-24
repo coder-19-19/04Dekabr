@@ -3,14 +3,14 @@ import instance from "../../api/index.js";
 import Tweet from "../../components/tweet/index.jsx";
 import {Col, Row, Spinner} from "reactstrap";
 
-const MyTweets = () => {
+const RepliesTweets = () => {
     const currentUser = JSON.parse(localStorage.getItem('user'))
     const id = currentUser?.id
     const [isLoading, setIsLoading] = useState(false)
     const [tweets, setTweets] = useState([])
     const getTweets = async () => {
         setIsLoading(true)
-        const data = await instance.get(`tweet/all/own/${id}`, {
+        const data = await instance.get(`tweet/all/replies/${id}`, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem('token')}`
             },
@@ -37,4 +37,4 @@ const MyTweets = () => {
     )
 }
 
-export default MyTweets
+export default RepliesTweets

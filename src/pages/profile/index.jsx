@@ -20,14 +20,17 @@ import {
     TabContent,
     TabPane
 } from "reactstrap";
-import FollowersModal from "../user/followers-modal.jsx";
-import {getProfileFileUrl} from "../../utils/file/index.js";
+import UsersListModal from "../user/users-list-modal.jsx";
 import {useEffect, useState} from "react";
 import instance from "../../api/index.js";
 import {useNavigate} from "react-router-dom";
 import {getUserShortName} from "../../utils/text/index.js";
 import PostTweet from "../../components/post-tweet/index.jsx";
 import MyTweets from "./my-tweets.jsx";
+import LikedTweets from "./liked-tweets.jsx";
+import SavedTweets from "./saved-tweets.jsx";
+import RepliesTweets from "./replies-tweets.jsx";
+import {getFileFullUrl} from "../../utils/file/index.js";
 
 const Profile = () => {
     const [isUserModalOpen, setIsUserModalOpen] = useState(false)
@@ -99,7 +102,7 @@ const Profile = () => {
             ...user,
             profile_photo: {
                 file_uuid: resFile?.id,
-                file_path: resFile?.storage_path,
+                file_path: resFile?.path,
             }
         })
     }
@@ -123,7 +126,7 @@ const Profile = () => {
             ...user,
             profile_banner: {
                 file_uuid: resFile?.id,
-                file_path: resFile?.storage_path,
+                file_path: resFile?.path,
             }
         })
         setBinaryBannerPhoto(URL.createObjectURL(file))
@@ -136,7 +139,7 @@ const Profile = () => {
         <Modal isOpen={isUserModalOpen} toggle={toggleModal}>
             <ModalHeader toggle={toggleModal}>Followers</ModalHeader>
             <ModalBody>
-                <FollowersModal currentUserId={user?.id} type={modalData}/>
+                <UsersListModal currentUserId={user?.id} type={modalData}/>
             </ModalBody>
             <ModalFooter>
                 <Button color="secondary" onClick={() => {
@@ -160,6 +163,21 @@ const Profile = () => {
                     My Tweets
                 </NavLink>
             </NavItem>
+            <NavItem>
+                <NavLink className={activeTab === 4 && 'active'} onClick={() => setActiveTab(4)}>
+                    Liked Tweets
+                </NavLink>
+            </NavItem>
+            <NavItem>
+                <NavLink className={activeTab === 5 && 'active'} onClick={() => setActiveTab(5)}>
+                    Saved Tweets
+                </NavLink>
+            </NavItem>
+            <NavItem>
+                <NavLink className={activeTab === 6 && 'active'} onClick={() => setActiveTab(6)}>
+                    Replies Tweets
+                </NavLink>
+            </NavItem>
         </Nav>
         <TabContent className="mt-3" activeTab={activeTab}>
             <TabPane tabId={1}>
@@ -179,7 +197,7 @@ const Profile = () => {
                                     }}/>
                                     {(binaryPhoto || user?.profile_photo_path) ? <label htmlFor="profile-photo">
                                         <img width="200px" height="200px"
-                                             src={binaryPhoto || getProfileFileUrl(user?.profile_photo_path)}/>
+                                             src={binaryPhoto || getFileFullUrl(user?.profile_photo_path)}/>
                                     </label> : (
                                         <label htmlFor="profile-photo" style={{
                                             width: 200,
@@ -206,7 +224,7 @@ const Profile = () => {
                                     {(binaryBannerPhoto || user?.profile_banner_path) ? (
                                         <label htmlFor="banner-photo">
                                             <img width="200px" height="200px"
-                                                 src={binaryBannerPhoto || getProfileFileUrl(user?.profile_banner_path)}/>
+                                                 src={binaryBannerPhoto || getFileFullUrl(user?.profile_banner_path)}/>
                                         </label>
                                     ) : (
                                         <>
@@ -299,6 +317,21 @@ const Profile = () => {
             <TabPane tabId={3}>
                 <Col sm={12} className="mt-2">
                     <MyTweets/>
+                </Col>
+            </TabPane>
+            <TabPane tabId={4}>
+                <Col sm={12} className="mt-2">
+                    <LikedTweets/>
+                </Col>
+            </TabPane>
+            <TabPane tabId={5}>
+                <Col sm={12} className="mt-2">
+                    <SavedTweets/>
+                </Col>
+            </TabPane>
+            <TabPane tabId={6}>
+                <Col sm={12} className="mt-2">
+                    <RepliesTweets/>
                 </Col>
             </TabPane>
         </TabContent>
